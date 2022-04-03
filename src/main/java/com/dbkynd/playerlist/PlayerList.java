@@ -35,7 +35,10 @@ public class PlayerList {
     @Subscribe
     public void onPing(ProxyPingEvent event) {
         ServerPing response = event.getPing();
-        ServerPing.SamplePlayer[] playerInfo = server.getAllPlayers().stream().map(player -> new ServerPing.SamplePlayer(player.getUsername(), player.getUniqueId())).toArray(ServerPing.SamplePlayer[]::new);
+        ServerPing.SamplePlayer[] playerInfo = server.getAllPlayers().stream().map(player -> new ServerPing.SamplePlayer(
+            player.getCurrentServer().isPresent() ? String.format("[%s] %s", player.getCurrentServer().get().getServerInfo().getName(), player.getUsername()) : player.getUsername(),
+            player.getUniqueId()
+        )).toArray(ServerPing.SamplePlayer[]::new);
         ServerPing newResponse = response.asBuilder().samplePlayers(playerInfo).build();
         event.setPing(newResponse);
     }
